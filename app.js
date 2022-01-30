@@ -9,7 +9,9 @@ app.listen(port, () => {
   console.log(`서버가 실행됩니다. http://localhost:${port}`);
 })
 
-app.use(express.json());
+//body request json값을 받아오기 위함
+//본 express는 4.17 버전임으로 express.json을 사용하여 해결 가능
+app.use(express.json()) ;
 app.use('/product', productRouter);
 
 // 요청 메소드중 get방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
