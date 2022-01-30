@@ -9,6 +9,8 @@ app.listen(port, () => {
   console.log(`서버가 실행됩니다. http://localhost:${port}`);
 })
 
+app.use(express.json());
+app.use('/product', productRouter);
 
 // 요청 메소드중 get방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
 app.get('/', (req, res) => {
@@ -35,5 +37,3 @@ app.get('/callback',(req,res,next)=>{
 // 위 방식을 이렇게 간결하게 할 수 있다.
 app.get('/callback2', [ex0, ex1, ex2]);
 
-
-app.use('/product', productRouter);
