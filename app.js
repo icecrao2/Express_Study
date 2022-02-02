@@ -67,6 +67,6 @@ app.use(function(err,req,res,next){
 });
 
 app.use(function(err,req,res,next){
-  res.status(500);
+  res.status(500);    //res.status(코드) 현재 에러 코드를 500으로 하겠다.
   res.send('아 ㅋㅋ 모르겠다고')
 });
