@@ -13,12 +13,13 @@ app.listen(port, () => {
 //본 express는 4.17 버전임으로 express.json을 사용하여 해결 가능
 app.use(express.json()) ;
 app.use('/product', productRouter);
-
-
+app.set('view engine', 'ejs')
+app.engine('html', require('ejs').renderFile);
+app.set('views', './')
 
 app.get('/error', function(req,res,next){
   if(true)
-    next(new Error('두번째 에러'))
+    next(new Error('두번째 에러'));
   else
     res.send('good no errors');
 });
@@ -48,10 +49,11 @@ app.get('/callback',(req,res,next)=>{
 // 위 방식을 이렇게 간결하게 할 수 있다.
 app.get('/callback2', [ex0, ex1, ex2]);
 
-//404 에러핸들러
+
+//404에러는 이런식으로 사용한다.
 app.use(function(req, res, next) {
   res.status(404).send('Sorry cant find that!');
-//  next(err);
+//res.render('404error', {error: '404'});
 });
 
 //catch-all 에러핸들러 임으로 에러 핸들러중에서도 가장 아래 배치한다.
@@ -65,5 +67,6 @@ app.use(function(err,req,res,next){
 });
 
 app.use(function(err,req,res,next){
-  res.status(500).json({statusCode: res.statusCode, errMessage:'잘 모르겠다!'});
+  res.status(500);
+  res.send('아 ㅋㅋ 모르겠다고')
 });
