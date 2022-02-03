@@ -1,4 +1,5 @@
-const express = require('express');
+const express = require('express'); 
+
 const app = express();
 const port = 3000;
 const {ex0, ex1, ex2} = require('./nextex');
@@ -9,9 +10,16 @@ app.listen(port, () => {
   console.log(`서버가 실행됩니다. http://localhost:${port}`);
 })
 
+
 //body request json값을 받아오기 위함
 //본 express는 4.17 버전임으로 express.json을 사용하여 해결 가능
-app.use(express.json()) ;
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
+//정적 파일을 제공하기 위해 정적파일이있는 폴더를 불러옴
+//app.use(express.static('public'));
+//정적 파일을 미들웨어함수를 통해 제공되는 파일에대한 경로에 가상 경로를 앞에 추가하고 싶다면
+app.use('/static', express.static('public'));
+
 app.use('/product', productRouter);
 app.set('view engine', 'ejs')
 app.engine('html', require('ejs').renderFile);
@@ -27,11 +35,13 @@ app.get('/error', function(req,res,next){
 
 // 요청 메소드중 get방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
 app.get('/', (req, res) => {
+  console.log(req.body);
   res.send('Get방식');  //클라이언트를 향해 해당 문자열을 보내줌
 });
 
 // 요청 메소드중 post방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
 app.post('/', (req, res) => {
+  console.log(req.body);
   res.send('post방식');  //클라이언트를 향해 해당 문자열을 보내줌
 });
 
