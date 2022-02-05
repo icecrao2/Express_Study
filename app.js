@@ -1,9 +1,41 @@
 const express = require('express'); 
+const compression = require('compression');
+const session = require('express-session');
+const fileStore = require('session-file-store')(session);
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
 const {ex0, ex1, ex2} = require('./nextex');
 const productRouter = require('./product/product');
+const mySecret = process.env['SECRET']
+
+
+const corsOptions= {
+  origin:'www.domain.com',  //허용할 도메인
+  optionsSuccessStatus: 200
+};
+
+
+//모든경우에 cors를 허용함
+app.use(cors(corsOptions));
+
+app.use(session({
+  secret: 'secret key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly:true,
+    secure: true,
+    maxAge:600000
+  },
+  store: new fileStore()
+
+}));
+
+
+const data = ('I love GeeksforGeeks').repeat(800)
 
 // app.listen 을 통하여 서버를 실행한다.
 app.listen(port, () => {
@@ -21,6 +53,12 @@ app.use(express.urlencoded({ extended: true}));
 app.use('/static', express.static('public'));
 
 app.use('/product', productRouter);
+
+//해당 경로로 요청받을 경우에만 응답 데이터를 압축한다
+//app.use('/api/getMap', compression());
+//모든 라우터에대한 응답값을 압축함
+//app.use(compression());
+
 app.set('view engine', 'ejs')
 app.engine('html', require('ejs').renderFile);
 app.set('views', './')
@@ -36,7 +74,7 @@ app.get('/error', function(req,res,next){
 // 요청 메소드중 get방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
 app.get('/', (req, res) => {
   console.log(req.body);
-  res.send('Get방식');  //클라이언트를 향해 해당 문자열을 보내줌
+  res.send(process.env.SECRET);  //클라이언트를 향해 해당 문자열을 보내줌
 });
 
 // 요청 메소드중 post방식으로 해당 주소 포트로 요청을 보내면 실행되는 라우트
@@ -55,9 +93,18 @@ app.get('/callback',(req,res,next)=>{
 }, (req, res)=>{
   res.send("cde");
   console.log("efg");
-})
+});
 // 위 방식을 이렇게 간결하게 할 수 있다.
 app.get('/callback2', [ex0, ex1, ex2]);
+
+app.get('/api/getMap', (req,res)=> {
+  res.send(data);
+});
+
+app.get('/cors', cors(corsOptions), (req, res, next)=>{
+  res.json({msg:'this is cors-enabled'});
+});
+
 
 
 //404에러는 이런식으로 사용한다.
